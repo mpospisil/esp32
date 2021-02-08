@@ -8,13 +8,20 @@ namespace CarController
 {
 	public class Program
 	{
+		static GpioPin goLedPin;
 		static GpioPin goPin;
+
 		public static void Main()
 		{
 			Debug.WriteLine("Hello from nanoFramework!");
 
-			goPin = GpioController.GetDefault().OpenPin(Gpio.IO12);
+			goLedPin = GpioController.GetDefault().OpenPin(Gpio.IO12);
+			goLedPin.SetDriveMode(GpioPinDriveMode.Output);
+			goLedPin.Write(GpioPinValue.Low);
+
+			goPin = GpioController.GetDefault().OpenPin(Gpio.IO27);
 			goPin.SetDriveMode(GpioPinDriveMode.Output);
+			goPin.Write(GpioPinValue.High);
 
 			GpioPin engineControlPin = GpioController.GetDefault().OpenPin(Gpio.IO14);
 			engineControlPin.SetDriveMode(GpioPinDriveMode.InputPullUp);
@@ -38,6 +45,7 @@ namespace CarController
 			var engineButtonVal = e.Edge.ToString();
 			if(!string.IsNullOrEmpty(engineButtonVal) && engineButtonVal.Equals("1"))
 			{
+				goLedPin.Toggle();
 				goPin.Toggle();
 			}
 		}
