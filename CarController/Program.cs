@@ -15,13 +15,23 @@ namespace CarController
 			GpioPin goPin = GpioController.GetDefault().OpenPin(Gpio.IO12);
 			goPin.SetDriveMode(GpioPinDriveMode.Output);
 
-			while(true)
+			GpioPin engineControlPin = GpioController.GetDefault().OpenPin(Gpio.IO14);
+			engineControlPin.SetDriveMode(GpioPinDriveMode.Input);
+			engineControlPin.DebounceTimeout = TimeSpan.FromMilliseconds(2);
+			engineControlPin.ValueChanged += EngineControlPin_ValueChanged;
+
+			while (true)
 			{
 				goPin.Toggle();
 				Thread.Sleep(1000);
 			}
 
 			
+		}
+
+		private static void EngineControlPin_ValueChanged(object sender, GpioPinValueChangedEventArgs e)
+		{
+			Debug.WriteLine(e.Edge.ToString());
 		}
 	}
 }
